@@ -23,36 +23,37 @@ var kobopath = process.argv[5];
 
 kobo2geojson.connect2Kobo(kobouser, kobopass, kobohost, kobopath)
     .then(function(res) {
-        console.log('\n\n\nResultado:\n' + JSON.stringify(res));
-
         res.forEach(function(element, index) {
+            console.log('\n\n\nResultado ID:\n' + JSON.stringify(element.id));
+
             kobo2geojson.connect2Kobo(kobouser, kobopass, kobohost, kobopath + '/' + element.id)
                 .then(function(res2) {
-                    //console.log('\n\n\nResultado2:\n' + JSON.stringify(res2));
+                    // console.log('\n\n\nResultado2:\n' + JSON.stringify(res2.id));
                     // Use connect method to connect to the Server 
                     MongoClient.connect(url, function(err, db) {
                         console.log("Connected correctly to server");
 
                         res2.forEach(function(e, i) {
-                            var newGJson = {
-                                type: 'Feature',
-                                properties: {},
-                                geometry: {
-                                    type: 'Point',
-                                    coordinates: []
-                                }
-                            };
-                            newGJson.properties._id = e._id;
-                            newGJson.geometry.coordinates = e._geolocation;
-                            // Get the documents collection 
-                            var collection = db.collection('koboinfos');
-                            // Insert
-                            collection.insertOne(newGJson, function(err, result) {
-                                assert.equal(err, null);
-                                assert.equal(1, result.insertedCount);
-                            });
+                            if (e._geolocation[0] !== null && e._geolocation[0] !== null) {
+                                var newGJson = {
+                                    type: 'Feature',
+                                    properties: {},
+                                    geometry: {
+                                        type: 'Point',
+                                        coordinates: []
+                                    }
+                                };
+                                newGJson.properties._id = e._id;
+                                newGJson.geometry.coordinates = e._geolocation;
+                                // Get the documents collection 
+                                var collection = db.collection('koboinfos');
+                                // Insert
+                                collection.insertOne(newGJson, function(err, result) {
+                                    assert.equal(err, null);
+                                    assert.equal(1, result.insertedCount);
+                                });
 
-
+                            }
                             console.log('newGJson ' + JSON.stringify(newGJson));
                         });
                         db.close();
