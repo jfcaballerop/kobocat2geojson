@@ -1,5 +1,8 @@
 var kobo2geojson = require('../lib/kobocat2geojson');
-
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
+// Connection URL 
+var url = 'mongodb://mkfwcore:admin@localhost:27017/mkfwcoredb';
 
 if (process.argv.length <= 4) {
     console.log(process.argv);
@@ -17,4 +20,48 @@ var kobopath = process.argv[5];
 // var user = process.argv[7];
 // var pass = process.argv[8];
 // var authdb = process.argv[9];
-console.log('Resultado:\n' + kobo2geojson.connect2Kobo(kobouser, kobopass, kobohost, kobopath));
+
+kobo2geojson.connect2Kobo(kobouser, kobopass, kobohost, kobopath)
+    .then(function(res) {
+        console.log('\n\n\nResultado:\n' + JSON.stringify(res));
+
+        res.forEach(function(element, index) {
+            kobo2geojson.connect2Kobo(kobouser, kobopass, kobohost, kobopath + '/' + element.id)
+                .then(function(res2) {
+                    //console.log('\n\n\nResultado2:\n' + JSON.stringify(res2));
+                    // Use connect method to connect to the Server 
+                    MongoClient.connect(url, function(err, db) {
+                        console.log("Connected correctly to server");
+
+                        res2.forEach(function(e, i) {
+                            var newGJson = {
+                                type: 'Feature',
+                                properties: {},
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: []
+                                }
+                            };
+                            newGJson.properties._id = e._id;
+                            newGJson.geometry.coordinates = e._geolocation;
+                            // Get the documents collection 
+                            var collection = db.collection('koboinfos');
+                            // Insert
+                            collection.insertOne(newGJson, function(err, result) {
+                                assert.equal(err, null);
+                                assert.equal(1, result.insertedCount);
+                            });
+
+
+                            console.log('newGJson ' + JSON.stringify(newGJson));
+                        });
+                        db.close();
+                    });
+                }).catch(function(err2) {
+                    console.log('ERR2 ' + err);
+                });
+
+        });
+    }).catch(function(err) {
+        console.log('ERR ' + err);
+    });
