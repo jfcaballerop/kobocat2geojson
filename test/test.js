@@ -44,7 +44,8 @@ kobo2geojson.connect2Kobo(kobouser, kobopass, kobohost, kobopath)
                                     }
                                 };
                                 newGJson.properties._id = e._id;
-                                newGJson.geometry.coordinates = e._geolocation;
+                                newGJson.geometry.coordinates[0] = e._geolocation[1];
+                                newGJson.geometry.coordinates[1] = e._geolocation[0];
                                 // Get the documents collection 
                                 var collection = db.collection('koboinfos');
                                 // Insert
