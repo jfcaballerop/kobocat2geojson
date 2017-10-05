@@ -363,6 +363,17 @@ kobo2geojson.connect2Kobo(kobouser, kobopass, kobohost, kobopath)
                                         newGJson.properties.btype = e[k];
                                     }
 
+                                    //ADD TYPE KOBO
+                                    if (k.indexOf("_xform_id_string") !== -1) {
+                                        newGJson.properties.xform_id_string = e[k];
+                                    }
+                                    if (k.indexOf("group1_1/type") !== -1) {
+                                        newGJson.properties.kobo_type = e[k];
+                                    }
+                                    if (k.indexOf("Grupo1/Generals/type") !== -1) {
+                                        newGJson.properties.kobo_type = e[k];
+                                    }
+
 
                                 });
                                 // ADD GEOMETRY
