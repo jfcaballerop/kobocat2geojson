@@ -55,6 +55,9 @@ kobo2geojson.connect2Kobo(kobouser, kobopass, kobohost, kobopath)
                                     }
                                     if (k.indexOf("Grupo5Lg==2/clearing") !== -1) {
                                         newGJson.properties.dclearing = e[k];
+                                        e[k].indexOf("no") !== -1 ? newGJson.properties.dlostsection = "0%" : newGJson.properties.dlostsection = "";
+                                        // console.log('key2: ' + newGJson.properties.dlostsection);
+
                                     }
                                     if (k.indexOf("Grupo5Lg==2/transdamage") !== -1) {
                                         newGJson.properties.dcrossdamages = e[k];
@@ -120,7 +123,10 @@ kobo2geojson.connect2Kobo(kobouser, kobopass, kobohost, kobopath)
                                         newGJson.properties.gphoto.push(e[k]);
                                     }
                                     if (k.indexOf("Grupo8/VegTipus1") !== -1) {
+                                        // console.log('key: ' + k + ' - ' + e[k] + ' id: ' + e._id);
                                         newGJson.properties.gtypevegetation = e[k];
+                                        (e[k].indexOf("No_vegetation") !== -1 && e[k].indexOf(" No_vegetation") === -1) ? newGJson.properties.gvegetation = "no": newGJson.properties.gvegetation = "yes";
+                                        // console.log('key2: ' + newGJson.properties.gvegetation);
                                     }
                                     if (k.indexOf("Grupo10/aretreatments") !== -1) {
                                         newGJson.properties.gtreatments = e[k];
@@ -230,7 +236,7 @@ kobo2geojson.connect2Kobo(kobouser, kobopass, kobohost, kobopath)
                                     if (k.indexOf("Grupo5Lg==1/HistCons") !== -1) {
                                         newGJson.properties.bconslos = e[k];
                                     }
-                                    if (k.indexOf("danotipo/danotipo_funcionales") !== -1) {
+                                    if (k.indexOf("danotipo") !== -1) {
                                         newGJson.properties.bdamagesnonstructural = e[k];
                                     }
                                     if (k.indexOf("danotipo/danotipo_estructura") !== -1) {
